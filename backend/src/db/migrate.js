@@ -10,7 +10,8 @@ function ifNotExists(ddl) {
       EXECUTE IMMEDIATE '${ddl.replace(/'/g, "''")}';
     EXCEPTION
       WHEN OTHERS THEN
-        IF SQLCODE = -955 THEN NULL;
+        IF SQLCODE = -955 THEN NULL;     -- ORA-00955: name already used
+        ELSIF SQLCODE = -1408 THEN NULL; -- ORA-01408: column list already indexed
         ELSE RAISE;
         END IF;
     END;`;

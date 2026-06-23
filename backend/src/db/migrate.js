@@ -17,23 +17,10 @@ function ifNotExists(ddl) {
     END;`;
 }
 
-// Build the trigger DDL at Oracle runtime using chr(58) for ':'.
-// This prevents oracledb AND Oracle's EXECUTE IMMEDIATE from treating
-// :NEW as a bind variable placeholder — a well-known Oracle gotcha.
-function createTrigger(name, table) {
-  return `
-    DECLARE
-      v_sql VARCHAR2(4000);
-    BEGIN
-      v_sql :=   'CREATE OR REPLACE TRIGGER ${name} '
-             ||  'BEFORE UPDATE ON ${table} '
-             ||  'FOR EACH ROW BEGIN '
-             ||  chr(58) || 'NEW.updated_at := SYSTIMESTAMP; END';
-      EXECUTE IMMEDIATE v_sql;
-    END;`;
-}
-
 // ─── Tables (dependency order) ─────────────────────────────────────────────
+// NOTE: updated_at is managed by the application (buildUpdate always appends
+// "updated_at = :updated_at" and every INSERT passes an explicit timestamp),
+// so database-level UPDATE triggers are not needed.
 
 const TABLES = [
   {
@@ -262,29 +249,11 @@ const INDEXES = [
   { name: 'Index: idx_sd_ip_id',         sql: 'CREATE INDEX idx_sd_ip_id         ON support_details(initiative_partner_id)' },
 ].map(({ name, sql }) => ({ name, sql: ifNotExists(sql) }));
 
-// ─── Triggers (wrapped in EXECUTE IMMEDIATE so oracledb does not parse :NEW) ─
-
-const TRIGGERS = [
-  { table: 'users',                       name: 'trg_users_upd' },
-  { table: 'initiatives',                 name: 'trg_init_upd' },
-  { table: 'partners',                    name: 'trg_partners_upd' },
-  { table: 'products',                    name: 'trg_products_upd' },
-  { table: 'initiative_partners',         name: 'trg_ip_upd' },
-  { table: 'api_documents',              name: 'trg_ad_upd' },
-  { table: 'partner_features',           name: 'trg_pf_upd' },
-  { table: 'initiative_partner_products', name: 'trg_ipp_upd' },
-  { table: 'support_details',            name: 'trg_sd_upd' },
-  { table: 'api_specifications',         name: 'trg_aspec_upd' },
-].map(({ table, name }) => ({
-  name: `Trigger: ${name}`,
-  sql: createTrigger(name, table),
-}));
-
 // ─── Main migration function (exported so server.js can call it on startup) ─
 
 export async function runMigrations() {
   console.log('Checking / creating Oracle schema...');
-  const steps = [...TABLES, ...INDEXES, ...TRIGGERS];
+  const steps = [...TABLES, ...INDEXES];
   for (const { name, sql } of steps) {
     try {
       await query(sql);

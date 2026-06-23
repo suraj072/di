@@ -5,6 +5,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 import { initPool } from './db/index.js';
+import { runMigrations } from './db/migrate.js';
 import { requireAuth } from './middleware/auth.js';
 import authRoutes                     from './routes/auth.js';
 import initiativeRoutes               from './routes/initiatives.js';
@@ -47,12 +48,14 @@ app.use((err, _req, res, _next) => {
 
 const PORT = process.env.PORT || 3001;
 
-// Initialise Oracle connection pool before accepting requests
-initPool()
-  .then(() => {
+// Boot sequence: pool → auto-migrate (idempotent) → listen
+(async () => {
+  try {
+    await initPool();
+    await runMigrations();          // creates tables on first run, no-ops after
     app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
-  })
-  .catch((err) => {
-    console.error('Failed to initialise Oracle connection pool:', err.message);
+  } catch (err) {
+    console.error('Server startup failed:', err.message);
     process.exit(1);
-  });
+  }
+})();

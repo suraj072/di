@@ -1,0 +1,118 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* TVS Credit Brand Colors - Professional Blue & Green */
+    --background: 210 20% 98%;
+    --foreground: 207 100% 22%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 207 100% 22%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 207 100% 22%;
+
+    /* TVS Green - Primary Action Color */
+    --primary: 134 50% 45%;
+    --primary-foreground: 0 0% 100%;
+
+    /* TVS Deep Blue - Secondary/Brand Color */
+    --secondary: 207 100% 22%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 210 20% 96%;
+    --muted-foreground: 207 30% 45%;
+
+    /* TVS Deep Blue for accents */
+    --accent: 207 100% 22%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 210 25% 88%;
+    --input: 210 25% 88%;
+    --ring: 134 50% 45%;
+
+    --radius: 0.5rem;
+
+    /* Sidebar uses Green as primary */
+    --sidebar-background: 134 50% 42%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 0 0% 100%;
+    --sidebar-primary-foreground: 134 50% 42%;
+    --sidebar-accent: 134 50% 35%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 134 50% 35%;
+    --sidebar-ring: 0 0% 100%;
+
+    /* Custom brand tokens */
+    --tvs-blue: 207 100% 22%;
+    --tvs-green: 134 50% 42%;
+    --tvs-green-dark: 134 55% 35%;
+    --tvs-blue-light: 207 60% 35%;
+    
+    /* Header gradient - Green dominant */
+    --header-gradient: linear-gradient(135deg, hsl(134 50% 42%) 0%, hsl(134 55% 35%) 100%);
+  }
+
+  .dark {
+    --background: 207 50% 8%;
+    --foreground: 0 0% 98%;
+
+    --card: 207 40% 12%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 207 40% 12%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 134 50% 45%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 207 60% 35%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 207 30% 18%;
+    --muted-foreground: 210 15% 65%;
+
+    --accent: 207 60% 35%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 207 30% 20%;
+    --input: 207 30% 20%;
+    --ring: 134 50% 45%;
+
+    --sidebar-background: 134 50% 38%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 0 0% 100%;
+    --sidebar-primary-foreground: 134 50% 38%;
+    --sidebar-accent: 134 55% 30%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 134 55% 30%;
+    --sidebar-ring: 0 0% 100%;
+
+    --tvs-blue: 207 100% 22%;
+    --tvs-green: 134 50% 42%;
+    --tvs-green-dark: 134 55% 35%;
+    --tvs-blue-light: 207 60% 35%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}

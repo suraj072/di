@@ -17,19 +17,19 @@ function ifNotExists(ddl) {
     END;`;
 }
 
-// Wrap CREATE OR REPLACE TRIGGER inside EXECUTE IMMEDIATE so that
-// oracledb does NOT mis-parse :NEW / :OLD as bind variables.
+// Build the trigger DDL at Oracle runtime using chr(58) for ':'.
+// This prevents oracledb AND Oracle's EXECUTE IMMEDIATE from treating
+// :NEW as a bind variable placeholder — a well-known Oracle gotcha.
 function createTrigger(name, table) {
   return `
+    DECLARE
+      v_sql VARCHAR2(4000);
     BEGIN
-      EXECUTE IMMEDIATE '
-        CREATE OR REPLACE TRIGGER ${name}
-        BEFORE UPDATE ON ${table}
-        FOR EACH ROW
-        BEGIN
-          :NEW.updated_at := SYSTIMESTAMP;
-        END
-      ';
+      v_sql :=   'CREATE OR REPLACE TRIGGER ${name} '
+             ||  'BEFORE UPDATE ON ${table} '
+             ||  'FOR EACH ROW BEGIN '
+             ||  chr(58) || 'NEW.updated_at := SYSTIMESTAMP; END';
+      EXECUTE IMMEDIATE v_sql;
     END;`;
 }
 
